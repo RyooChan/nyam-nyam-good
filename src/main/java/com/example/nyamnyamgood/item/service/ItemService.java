@@ -1,5 +1,7 @@
 package com.example.nyamnyamgood.item.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,11 @@ public class ItemService {
             .build();
 
         return itemRepository.save(item);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Item> showRemainItemListByStoreId(long storeId) {
+        return this.itemRepository.selectItemListByStoreId(storeId);
     }
 
 
