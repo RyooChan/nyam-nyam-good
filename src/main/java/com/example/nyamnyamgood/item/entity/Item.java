@@ -17,7 +17,8 @@ import lombok.NoArgsConstructor;
 public class Item {
     @Id
     private long itemId;
-    private int amount;
+    private String itemName;
+    private int price;
     private int remained;
     private long storeId;
 }
