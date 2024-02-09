@@ -1,4 +1,4 @@
-package com.example.nyamnyamgood.customer.entiry;
+package com.example.nyamnyamgood.customer.entity;
 
 import jakarta.persistence.Id;
 import lombok.Builder;

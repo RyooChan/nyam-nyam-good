@@ -1,4 +1,4 @@
-package com.example.nyamnyamgood.store.entiry;
+package com.example.nyamnyamgood.store.entity;
 
 import jakarta.persistence.Id;
 import lombok.Builder;
@@ -11,5 +11,5 @@ public class Store {
     private long storeId;
 
     private String storeName;
-    private Type storeType;
+    private StoreType storeType;
 }

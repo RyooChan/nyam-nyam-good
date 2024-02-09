@@ -1,9 +1,9 @@
-package com.example.nyamnyamgood.store.entiry;
+package com.example.nyamnyamgood.store.entity;
 
 import lombok.Getter;
 
 @Getter
-public enum Type {
+public enum StoreType {
     KOREAN,
     CHINESE,
     JAPANESE,
