@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@Transactional
 class ItemServiceTest {
 
     @Autowired
@@ -38,17 +37,33 @@ class ItemServiceTest {
 
     @Test
     public void 아이템_존재_여부_테스트() {
-        Store store = this.storeService.saveStore("테스트", StoreType.KOREAN);
+        Store store = this.storeService.saveStore("음식점1", StoreType.KOREAN);
+        Store store2 = this.storeService.saveStore("음식점2", StoreType.KOREAN);
         Item item1 = this.itemService.itemSave(store.getStoreId(), "비빔밥", 8000, 10);
         Item item2 = this.itemService.itemSave(store.getStoreId(), "육회", 18000, 10);
+        Item item3 = this.itemService.itemSave(store.getStoreId(), "잡채", 10000, 0);
+        Item item4 = this.itemService.itemSave(store.getStoreId(), "불고기", 10000, 0);
         ArrayList<Item> itemArrayList = new ArrayList<>();
         itemArrayList.add(item1);
         itemArrayList.add(item2);
+        for(int i=0; i<30; i++) {
+            itemArrayList.add(this.itemService.itemSave(store.getStoreId(), "테스트데이터", 10000, 10));
+        }
+        for(int i=0; i<3000; i++) {
+            this.itemService.itemSave(store2.getStoreId(), "테스트데이터", 10000, 10);
+        }
+        ArrayList<Item> itemNotRemainingList = new ArrayList<>();
+        itemNotRemainingList.add(item3);
+        itemNotRemainingList.add(item4);
 
         List<Item> itemList = this.itemService.showRemainItemListByStoreId(store.getStoreId());
 
         itemArrayList.forEach(
             item -> assertThat(itemList.contains(item))
+        );
+
+        itemNotRemainingList.forEach(
+            item -> assertThat(!itemList.contains(item))
         );
 
     }

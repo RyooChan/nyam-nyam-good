@@ -23,13 +23,18 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
         return queryFactory
             .selectFrom(item)
             .where(
-                storeIdEq(storeId)
+                storeIdEq(storeId),
+                isRemaining()
             )
             .fetch();
     }
 
     private BooleanExpression storeIdEq(long storeId) {
         return item.storeId.eq(storeId);
+    }
+
+    private BooleanExpression isRemaining() {
+        return item.remained.goe(0);
     }
 
 }
