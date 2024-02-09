@@ -2,6 +2,7 @@ package com.example.nyamnyamgood.item.service;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,12 @@ public class ItemService {
 
     @Transactional(readOnly = true)
     public List<Item> showRemainItemListByStoreId(long storeId) {
+        return this.itemRepository.selectItemListByStoreId(storeId);
+    }
+
+    @Cacheable(value = "itemCache", key = "#storeId")
+    @Transactional(readOnly = true)
+    public List<Item> showRemainItemListByStoreIdWithCache(long storeId) {
         return this.itemRepository.selectItemListByStoreId(storeId);
     }
 
