@@ -5,11 +5,14 @@ import java.util.List;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.example.nyamnyamgood.item.entity.Item;
 import com.example.nyamnyamgood.item.repository.ItemRepository;
 
 import lombok.RequiredArgsConstructor;
+
+import static org.springframework.transaction.annotation.Propagation.NESTED;
 
 @Service
 @RequiredArgsConstructor
@@ -39,5 +42,16 @@ public class ItemService {
         return this.itemRepository.selectItemListByStoreId(storeId);
     }
 
+    public Item minusRemained(long itemId) {
+        Item item = this.itemRepository.findById(itemId)
+            .orElseThrow(() -> new IllegalStateException("해당하는 물품이 없습니다."));
+
+        if (item.getRemained() == 0) {
+            throw new IllegalStateException("남은 재고가 없습니다.");
+        }
+
+        item.setRemained(item.getRemained() - 1);
+        return item;
+    }
 
 }

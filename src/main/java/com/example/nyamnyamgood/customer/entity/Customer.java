@@ -10,8 +10,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -22,4 +24,12 @@ public class Customer {
 
     private String customerName;
     private int point;
+
+    public void minusPoint(int point) {
+        if (this.point - point < 0) {
+            throw new IllegalStateException("소지금보다 비싼 물건을 구매할 수 없습니다.");
+        }
+
+        this.point = this.point - point;
+    }
 }

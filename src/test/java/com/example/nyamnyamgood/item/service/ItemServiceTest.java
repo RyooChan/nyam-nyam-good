@@ -98,6 +98,6 @@ class ItemServiceTest {
         assertThat(timeGapForDatabase).isGreaterThan(timeGapForCache);
         System.out.println("데이터베이스 : " + timeGapForDatabase);
         System.out.println("캐시 : " + timeGapForCache);
-
     }
+
 }
