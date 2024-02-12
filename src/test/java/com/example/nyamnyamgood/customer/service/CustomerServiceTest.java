@@ -1,18 +1,20 @@
 package com.example.nyamnyamgood.customer.service;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.nyamnyamgood.buyItem.service.BuyItemFacade;
 import com.example.nyamnyamgood.customer.entity.Customer;
+import com.example.nyamnyamgood.customer.repository.CustomerRepository;
 import com.example.nyamnyamgood.customerItem.entity.CustomerItem;
 import com.example.nyamnyamgood.item.entity.Item;
+import com.example.nyamnyamgood.item.repository.ItemRepository;
 import com.example.nyamnyamgood.item.service.ItemService;
 import com.example.nyamnyamgood.store.entity.Store;
 import com.example.nyamnyamgood.store.entity.StoreType;
+import com.example.nyamnyamgood.store.repository.StoreRepository;
 import com.example.nyamnyamgood.store.service.StoreService;
 
 import jakarta.persistence.EntityManager;
@@ -22,7 +24,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@Transactional
 class CustomerServiceTest {
 
     @Autowired
@@ -34,7 +35,27 @@ class CustomerServiceTest {
     @Autowired
     StoreService storeService;
 
+    @Autowired
+    EntityManager em;
+
+    @Autowired
+    CustomerRepository customerRepository;
+
+    @Autowired
+    ItemRepository itemRepository;
+
+    @Autowired
+    StoreRepository storeRepository;
+
+    @AfterEach
+    void afterTest() {
+        customerRepository.deleteAll();
+        itemRepository.deleteAll();
+        storeRepository.deleteAll();
+    }
+
     @Test
+    @Transactional
     public void 물건_구매_성공_테스트() {
         Store store = this.storeService.saveStore("음식점1", StoreType.KOREAN);
         Item item = this.itemService.itemSave(store.getStoreId(), "비빔밥", 8000, 10);
