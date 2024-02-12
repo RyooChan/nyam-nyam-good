@@ -1,5 +1,10 @@
 package com.example.nyamnyamgood.customer.service;
 
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.nyamnyamgood.customer.entity.Customer;
 import com.example.nyamnyamgood.customer.repository.CustomerRepository;
 import com.example.nyamnyamgood.customerItem.entity.CustomerItem;
+import com.example.nyamnyamgood.customerItem.repository.CustomerItemRepository;
 import com.example.nyamnyamgood.item.entity.Item;
 import com.example.nyamnyamgood.item.repository.ItemRepository;
 import com.example.nyamnyamgood.item.service.ItemService;
@@ -20,7 +26,6 @@ import com.example.nyamnyamgood.store.service.StoreService;
 import jakarta.persistence.EntityManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -36,7 +41,7 @@ class CustomerServiceTest {
     StoreService storeService;
 
     @Autowired
-    EntityManager em;
+    CustomerItemRepository customerItemRepository;
 
     @Autowired
     CustomerRepository customerRepository;
@@ -52,6 +57,7 @@ class CustomerServiceTest {
         customerRepository.deleteAll();
         itemRepository.deleteAll();
         storeRepository.deleteAll();
+        customerItemRepository.deleteAll();
     }
 
     @Test
@@ -93,6 +99,33 @@ class CustomerServiceTest {
             );
             assertThat(illegalStateException2.getMessage()).isEqualTo("남은 재고가 없습니다.");
         }
+    }
+
+    @Test
+    public void 여러_고객이_하나의_물건을_구매한다() throws InterruptedException {
+        Store store = this.storeService.saveStore("store", StoreType.KOREAN);
+        Item item = this.itemService.itemSave(store.getStoreId(), "비빔밥", 8000, 12);
+
+        int threadCount = 30;
+        ExecutorService executorService = Executors.newFixedThreadPool(32);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+
+        for (int i=0; i<threadCount; i++) {
+            executorService.submit(() -> {
+                try {
+                    Customer customer = this.customerService.customerSave("손님", 10000);
+                    this.customerService.buyItem(customer.getCustomerId(), item.getItemId());
+
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+
+        List<CustomerItem> all = this.customerItemRepository.findAll();
+        assertThat(all.size()).isEqualTo(12);
 
     }
 
