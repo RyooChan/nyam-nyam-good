@@ -1,7 +1,9 @@
 package com.example.nyamnyamgood.customer.service;
 
-import java.awt.Point;
+import java.util.concurrent.TimeUnit;
 
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,9 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final ItemService itemService;
     private final CustomerItemService customerItemService;
+    private final RedissonClient redissonClient;
+
+    private final String BUY_ITEM_KEY = "BUY_ITEM_REDISSON_KEY";
 
     @Transactional
     public Customer customerSave(String customerName, int point) {
@@ -43,6 +48,25 @@ public class CustomerService {
 
         customer.setPoint(pointAfterBuy);
         return customer;
+    }
+
+    public CustomerItem buyItemWithRedisson(long customerId, long itemId) {
+        RLock rLock = redissonClient.getLock(BUY_ITEM_KEY);
+
+        try {
+            boolean available = rLock.tryLock(3, 10, TimeUnit.SECONDS);
+
+            if (!available) {
+                throw new RuntimeException("구매 과정 중 lock 획득 실패");
+            }
+
+            return this.buyItem(customerId, itemId);
+
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            rLock.unlock();
+        }
     }
 
     @Transactional

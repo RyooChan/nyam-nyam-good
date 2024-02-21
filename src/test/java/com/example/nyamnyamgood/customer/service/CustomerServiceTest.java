@@ -114,7 +114,7 @@ class CustomerServiceTest {
             executorService.submit(() -> {
                 try {
                     Customer customer = this.customerService.customerSave("손님", 10000);
-                    this.customerService.buyItem(customer.getCustomerId(), item.getItemId());
+                    this.customerService.buyItemWithRedisson(customer.getCustomerId(), item.getItemId());
 
                 } finally {
                     latch.countDown();
