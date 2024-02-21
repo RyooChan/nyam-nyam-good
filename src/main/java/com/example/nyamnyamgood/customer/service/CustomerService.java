@@ -7,6 +7,7 @@ import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.nyamnyamgood.config.Utils;
 import com.example.nyamnyamgood.customer.entity.Customer;
 import com.example.nyamnyamgood.customer.repository.CustomerRepository;
 import com.example.nyamnyamgood.customerItem.entity.CustomerItem;
@@ -25,6 +26,10 @@ public class CustomerService {
     private final RedissonClient redissonClient;
 
     private final String BUY_ITEM_KEY = "BUY_ITEM_REDISSON_KEY";
+
+    private CustomerService getCustomerService() {
+        return Utils.getBean(CustomerService.class);
+    }
 
     @Transactional
     public Customer customerSave(String customerName, int point) {
@@ -60,7 +65,7 @@ public class CustomerService {
                 throw new RuntimeException("구매 과정 중 lock 획득 실패");
             }
 
-            return this.buyItem(customerId, itemId);
+            return this.getCustomerService().buyItem(customerId, itemId);
 
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
