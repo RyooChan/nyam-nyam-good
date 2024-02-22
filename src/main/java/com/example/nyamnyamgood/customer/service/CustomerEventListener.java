@@ -23,6 +23,5 @@ public class CustomerEventListener {
 
     @CacheEvict(value = "itemCache", key = "#storeId")
     public void refreshItemCache(long storeId) {
-        System.out.println(storeId);
     }
 }

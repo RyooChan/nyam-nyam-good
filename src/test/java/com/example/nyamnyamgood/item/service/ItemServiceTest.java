@@ -158,7 +158,30 @@ class ItemServiceTest {
     }
 
     @Test
-    public void 데이터_갱신_테스트() {
+    public void 많이_팔린_순서_정렬() {
+        Store store = this.storeService.saveStore("음식점", StoreType.KOREAN);
+        List<Item> itemArrayList = new ArrayList<>();
+
+        for(int i=0; i<30; i++) {
+            itemArrayList.add(this.itemService.itemSave(store.getStoreId(), "테스트데이터" + i, 10000, 90));
+        }
+
+        Customer customer = this.customerService.customerSave("TestUser", Integer.MAX_VALUE);
+
+        for (int i=0; i<30; i++) {
+            for(int j=0; j<=i; j++) {
+                this.customerService.buyItem(customer.getCustomerId(), itemArrayList.get(i).getItemId());
+            }
+        }
+
+        itemArrayList = itemArrayList.reversed();
+        List<Item> items = this.itemService.showRemainItemListByStoreIdOrderBySell(store.getStoreId());
+
+        for (int i=0; i<30; i++) {
+            System.out.println(itemArrayList.get(i).getItemName());
+            System.out.println(items.get(i).getItemName());
+            assertThat(itemArrayList.get(i).getItemName()).isEqualTo(items.get(i).getItemName());
+        }
 
     }
 

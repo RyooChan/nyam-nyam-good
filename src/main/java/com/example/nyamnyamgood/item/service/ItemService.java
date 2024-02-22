@@ -56,4 +56,10 @@ public class ItemService {
         return item;
     }
 
+    @Transactional(readOnly = true)
+    public List<Item> showRemainItemListByStoreIdOrderBySell(long storeId) {
+        return this.itemRepository.showRemainItemListByStoreIdOrderBySell(storeId);
+    }
+
+
 }
