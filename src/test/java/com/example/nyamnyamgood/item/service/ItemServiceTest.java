@@ -178,8 +178,6 @@ class ItemServiceTest {
         List<Item> items = this.itemService.showRemainItemListByStoreIdOrderBySell(store.getStoreId());
 
         for (int i=0; i<30; i++) {
-            System.out.println(itemArrayList.get(i).getItemName());
-            System.out.println(items.get(i).getItemName());
             assertThat(itemArrayList.get(i).getItemName()).isEqualTo(items.get(i).getItemName());
         }
 
