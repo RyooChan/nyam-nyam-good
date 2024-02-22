@@ -129,4 +129,31 @@ class CustomerServiceTest {
 
     }
 
+
+    @Test
+    public void 하나의_고객이_여러번_물건을_구매한다() throws InterruptedException {
+        Store store = this.storeService.saveStore("store", StoreType.KOREAN);
+        Item item = this.itemService.itemSave(store.getStoreId(), "비빔밥", 8000, 12);
+        Customer customer = this.customerService.customerSave("손님", 45000);
+
+        int threadCount = 30;
+        ExecutorService executorService = Executors.newFixedThreadPool(32);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+
+        for (int i=0; i<threadCount; i++) {
+            executorService.submit(() -> {
+                try {
+                    this.customerService.buyItemWithRedisson(customer.getCustomerId(), item.getItemId());
+
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+
+        List<CustomerItem> all = this.customerItemRepository.findAll();
+        assertThat(all.size()).isEqualTo(5);
+    }
 }

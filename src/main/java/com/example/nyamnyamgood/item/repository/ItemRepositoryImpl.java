@@ -34,7 +34,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
     }
 
     private BooleanExpression isRemaining() {
-        return item.remained.goe(0);
+        return item.remained.goe(1);
     }
 
 }

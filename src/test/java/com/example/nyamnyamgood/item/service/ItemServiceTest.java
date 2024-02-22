@@ -1,25 +1,28 @@
 package com.example.nyamnyamgood.item.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
+import com.example.nyamnyamgood.customer.entity.Customer;
+import com.example.nyamnyamgood.customer.repository.CustomerRepository;
+import com.example.nyamnyamgood.customer.service.CustomerService;
+import com.example.nyamnyamgood.customerItem.repository.CustomerItemRepository;
 import com.example.nyamnyamgood.item.entity.Item;
+import com.example.nyamnyamgood.item.repository.ItemRepository;
 import com.example.nyamnyamgood.store.entity.Store;
 import com.example.nyamnyamgood.store.entity.StoreType;
+import com.example.nyamnyamgood.store.repository.StoreRepository;
 import com.example.nyamnyamgood.store.service.StoreService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@Transactional
 class ItemServiceTest {
 
     @Autowired
@@ -27,6 +30,30 @@ class ItemServiceTest {
 
     @Autowired
     StoreService storeService;
+
+    @Autowired
+    CustomerService customerService;
+
+    @Autowired
+    CustomerItemRepository customerItemRepository;
+
+    @Autowired
+    CustomerRepository customerRepository;
+
+    @Autowired
+    ItemRepository itemRepository;
+
+    @Autowired
+    StoreRepository storeRepository;
+
+    @AfterEach
+    void afterTest() {
+        customerRepository.deleteAll();
+        itemRepository.deleteAll();
+        storeRepository.deleteAll();
+        customerItemRepository.deleteAll();
+    }
+
 
     @Test
     public void 아이템_저장_케이스() {
@@ -98,6 +125,36 @@ class ItemServiceTest {
         assertThat(timeGapForDatabase).isGreaterThan(timeGapForCache);
         System.out.println("데이터베이스 : " + timeGapForDatabase);
         System.out.println("캐시 : " + timeGapForCache);
+    }
+
+    @Test
+    public void 데이터_등록시_갱신_테스트() {
+        Store store = this.storeService.saveStore("음식점1", StoreType.KOREAN);
+        this.itemService.itemSave(store.getStoreId(), "비빔밥", 8000, 10);
+
+        List<Item> itemsWithCacheFirst = this.itemService.showRemainItemListByStoreIdWithCache(store.getStoreId());
+
+        this.itemService.itemSave(store.getStoreId(), "비빔국수", 8500, 10);
+        List<Item> itemsWithCacheSecond = this.itemService.showRemainItemListByStoreIdWithCache(store.getStoreId());
+
+        assertThat(itemsWithCacheFirst).isNotEqualTo(itemsWithCacheSecond);
+        assertThat(itemsWithCacheFirst.size()).isLessThan(itemsWithCacheSecond.size());
+    }
+
+    @Test
+    public void 재고_없을때_안보이는_테스트() {
+        Store store = this.storeService.saveStore("음식점1", StoreType.KOREAN);
+        Item item = this.itemService.itemSave(store.getStoreId(), "비빔밥", 8000, 1);
+
+        List<Item> itemsWithCacheFirst = this.itemService.showRemainItemListByStoreIdWithCache(store.getStoreId());
+
+        Customer customer = this.customerService.customerSave("밥매니아", 30000);
+        this.customerService.buyItem(customer.getCustomerId(), item.getItemId());
+
+        List<Item> itemsWithCacheSecond = this.itemService.showRemainItemListByStoreIdWithCache(store.getStoreId());
+
+        assertThat(itemsWithCacheFirst).isNotEqualTo(itemsWithCacheSecond);
+        assertThat(itemsWithCacheFirst.size()).isGreaterThan(itemsWithCacheSecond.size());
     }
 
 }

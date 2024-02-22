@@ -1,9 +1,12 @@
 package com.example.nyamnyamgood.config;
 
 import java.time.Duration;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -17,13 +20,10 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 public class CacheConfig {
 
     @Bean
-    public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
-        RedisCacheConfiguration cacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
-            .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
-            .entryTtl(Duration.ofMinutes(10)); // 캐시 만료 시간을 10분으로 설정
-
-        return RedisCacheManager.builder(redisConnectionFactory)
-            .cacheDefaults(cacheConfiguration)
-            .build();
+    public CacheManager cacheManager() {
+        ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager();
+        cacheManager.setAllowNullValues(false);
+        cacheManager.setCacheNames(List.of("itemCache"));
+        return cacheManager;
     }
 }

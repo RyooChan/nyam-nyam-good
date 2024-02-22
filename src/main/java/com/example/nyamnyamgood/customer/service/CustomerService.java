@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ public class CustomerService {
     private final ItemService itemService;
     private final CustomerItemService customerItemService;
     private final RedissonClient redissonClient;
+    private final ApplicationEventPublisher eventPublisher;
 
     private final String BUY_ITEM_KEY = "BUY_ITEM_REDISSON_KEY";
 
@@ -79,6 +81,7 @@ public class CustomerService {
         Item item = this.itemService.minusRemained(itemId);
         Customer customer = this.minusPoint(customerId, item);
         CustomerItem customerItem = this.customerItemService.customerItemSave(customer.getCustomerId(), item.getItemId());
+        eventPublisher.publishEvent(item);
         return customerItem;
     }
 

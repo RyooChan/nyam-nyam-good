@@ -2,6 +2,7 @@ package com.example.nyamnyamgood.item.service;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ public class ItemService {
     private final ItemRepository itemRepository;
 
     @Transactional
+    @CacheEvict(value = "itemCache", key = "#storeId")
     public Item itemSave(long storeId, String itemName, int price, int remained) {
         Item item = Item.builder()
             .storeId(storeId)
