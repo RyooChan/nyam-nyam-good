@@ -160,24 +160,35 @@ class ItemServiceTest {
     @Test
     public void 많이_팔린_순서_정렬() {
         Store store = this.storeService.saveStore("음식점", StoreType.KOREAN);
+        Store dummyStore = this.storeService.saveStore("미사용음식점", StoreType.KOREAN);
+        Store dummyStore2 = this.storeService.saveStore("미사용음식점2", StoreType.KOREAN);
         List<Item> itemArrayList = new ArrayList<>();
+        List<Item> dummyItemArrayList = new ArrayList<>();
+        List<Item> dummyItemArrayList2 = new ArrayList<>();
 
-        for(int i=0; i<30; i++) {
-            itemArrayList.add(this.itemService.itemSave(store.getStoreId(), "테스트데이터" + i, 10000, 90));
+        for(int i=0; i<100; i++) {
+            itemArrayList.add(this.itemService.itemSave(store.getStoreId(), "테스트데이터" + i, 1000, 900));
+            dummyItemArrayList.add(this.itemService.itemSave(dummyStore.getStoreId(), "더미데이터" + i, 1000, 900));
+            dummyItemArrayList2.add(this.itemService.itemSave(dummyStore2.getStoreId(), "더미데이터" + i, 1000, 900));
         }
 
         Customer customer = this.customerService.customerSave("TestUser", Integer.MAX_VALUE);
 
-        for (int i=0; i<30; i++) {
+        for (int i=0; i<100; i++) {
             for(int j=0; j<=i; j++) {
                 this.customerService.buyItem(customer.getCustomerId(), itemArrayList.get(i).getItemId());
+                this.customerService.buyItem(customer.getCustomerId(), dummyItemArrayList.get(i).getItemId());
+                this.customerService.buyItem(customer.getCustomerId(), dummyItemArrayList2.get(i).getItemId());
             }
         }
 
         itemArrayList = itemArrayList.reversed();
-        List<Item> items = this.itemService.showRemainItemListByStoreIdOrderBySell(store.getStoreId());
 
-        for (int i=0; i<30; i++) {
+        long startTime = System.currentTimeMillis();
+        List<Item> items = this.itemService.showRemainItemListByStoreIdOrderBySell(store.getStoreId());
+        long endTime = System.currentTimeMillis();
+
+        for (int i=0; i<100; i++) {
             assertThat(itemArrayList.get(i).getItemName()).isEqualTo(items.get(i).getItemName());
         }
 
