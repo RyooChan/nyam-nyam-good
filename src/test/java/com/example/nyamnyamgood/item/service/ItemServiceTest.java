@@ -87,11 +87,11 @@ class ItemServiceTest {
         List<Item> itemList = this.itemService.showRemainItemListByStoreId(store.getStoreId());
 
         itemArrayList.forEach(
-            item -> assertThat(itemList.contains(item))
+            item -> assertThat(itemList.contains(item)).isTrue()
         );
 
         itemNotRemainingList.forEach(
-            item -> assertThat(!itemList.contains(item))
+            item -> assertThat(!itemList.contains(item)).isTrue()
         );
 
     }
@@ -155,6 +155,11 @@ class ItemServiceTest {
 
         assertThat(itemsWithCacheFirst).isNotEqualTo(itemsWithCacheSecond);
         assertThat(itemsWithCacheFirst.size()).isGreaterThan(itemsWithCacheSecond.size());
+    }
+
+    @Test
+    public void 데이터_갱신_테스트() {
+
     }
 
 }
