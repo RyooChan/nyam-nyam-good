@@ -29,7 +29,7 @@
 - index를 통한 검색 진행
     - `create index idx_storeid_remained on item (store_id, remained);`
     - querydsl의 [조건절](https://github.com/RyooChan/nyam-nyam-good/blob/f7f4cf32331c042b8ae3869a8e73849c9861e07e/src/main/java/com/example/nyamnyamgood/item/repository/ItemRepositoryImpl.java#L26)에 맞춰 인덱스 생성
-    - [여기](https://github.com/RyooChan/TIL/blob/main/Database/Real_MySQL/008.md)를 보면 index는 그냥 읽는 것에 비해 4~5배 정도의 속도 하락이 있기 때문에 검색해야 하는 데이터가 전체 레코드의 20~25% 이하가 되도록 설정하고 진행했다. -> 시간을 좀 명확히 보기 위해 많은 더미데이터를 넣음
+    - [여기](https://github.com/RyooChan/TIL/blob/main/Database/Real_MySQL/008.md)를 보면 index는 그냥 읽는 것에 비해 4\~5배 정도의 속도 하락이 있기 때문에 검색해야 하는 데이터가 전체 레코드의 20\~25% 이하가 되도록 설정하고 진행했다. -> 시간을 좀 명확히 보기 위해 많은 더미데이터를 넣음
     - `select store_id, remained, item_id from item where 1=1 and store_id = 272 and remained >= 1;`
     - 다음의 쿼리에 대해(검색 결과는 인덱스 사용을 보여주기 위해 조작) 
     - ![image](https://github.com/RyooChan/nyam-nyam-good/assets/53744363/56b56c96-ccb8-4f97-ae96-45b1445b7d0d)
