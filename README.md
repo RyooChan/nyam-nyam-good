@@ -58,7 +58,7 @@
     - [Test할 때에 SpringBootTest의 Transactional 제거](https://hello-backend.tistory.com/294)
 - Case 1 : [여러 고객이 하나의 물건을 구매](https://github.com/RyooChan/nyam-nyam-good/blob/45179de63bacd90e46a26f7f2ec920afdda8e1f6/src/test/java/com/example/nyamnyamgood/customer/service/CustomerServiceTest.java#L105)하는 경우
     - redisson을 통한 redis 분산락 적용
-    - [lettuce에 비해 빠르고](https://hello-backend.tistory.com/214), 여러 DB table에 걸쳐서 진행되고 실서버의 경우 분산DB가 있을 수 있다고 판단하여 [DB lock](https://hello-backend.tistory.com/213)보다는 redisson 적용.
+    - [lettuce에 비해 빠르고](https://hello-backend.tistory.com/214), 여러 DB table에 걸쳐서 진행되고 실서버의 경우 분산 서버로 운영되며 DB 락은 이슈가 있을 수 있다고 판단하여 [DB lock](https://hello-backend.tistory.com/213)보다는 redisson 적용.
         - 이를 통해 여러 쓰레드에서 한꺼번에 접근해도 동시성 문제 해결 완료
     - 동일 service에서의 [self-invocation](https://hello-backend.tistory.com/258) 해결을 위해 [getBean](https://github.com/RyooChan/nyam-nyam-good/blob/45179de63bacd90e46a26f7f2ec920afdda8e1f6/src/main/java/com/example/nyamnyamgood/config/Utils.java#L8) 적용
     - 
